@@ -17,7 +17,7 @@ public class ConnectionFactory {
 	private static ConnectionFactory instance;
 	private Connection connection;
 	
-	
+	//call and build a connection as soon as created
 	public ConnectionFactory() {
 		this.builderConnection();
 	}

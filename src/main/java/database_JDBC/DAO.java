@@ -1,4 +1,4 @@
-package database;
+package database_JDBC;
 
 public class DAO {
 

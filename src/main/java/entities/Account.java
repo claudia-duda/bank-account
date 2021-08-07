@@ -9,17 +9,18 @@ import java.time.LocalDate;
 public class Account implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private Double balance;
-	private Double withdrawLimit;
-	private UserData userData;
+	private Double balance, withdrawLimit;
+	private Integer userId;
+	
 	public Account() {
 	}
+	
 	//the main construct responsible to get all important information to an account
-	public Account(Double balance, Double withdrawLimit, String holder, String CPF, LocalDate birthday){
+	public Account(Double balance, Double withdrawLimit, Integer userId){
 	
 		this.balance = balance;
 		this.withdrawLimit = withdrawLimit;
-		this.userData = new UserData(holder,CPF,birthday);
+		this.userId = userId; 
 	}
 	
 	public Double getBalance() {
@@ -38,24 +39,21 @@ public class Account implements Serializable{
 		this.withdrawLimit = withdrawLimit;
 	}
 	
-	public String getuserData() {
-		return this.userData.toString();
+	public Integer getuserId() {
+		return this.userId;
 	}
-	public void setUserData(UserData user) {
-		this.userData = user;
-	}
-	public String getCPF() {
-		return this.userData.getCPF();
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	//return the important attributes
 	@Override
 	public String toString() {
-		return "Conta [saldo= " + balance + " limite conta= " + withdrawLimit + userData + "]";
+		return "Conta [saldo= " + balance + " limite conta= " + withdrawLimit +" Id usuário" + userId + "]";
 	}
 	//the way how the text is saving the account data
 	public String formatStringTxt() {
-		return "Account = ;" + balance + ";" + withdrawLimit + ";"+ userData.formatStringTxt() ;
+		return "Account = ;" + balance + ";" + withdrawLimit + ";";
 	}
 		
 
