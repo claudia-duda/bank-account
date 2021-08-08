@@ -1,7 +1,6 @@
 package entities;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 
 /*
  * The Account has all actions and user information from a basic account
@@ -53,7 +52,7 @@ public class Account implements Serializable{
 	}
 	//the way how the text is saving the account data
 	public String formatStringTxt() {
-		return "Account = ;" + balance + ";" + withdrawLimit + ";";
+		return "Account = ;" + balance + ";" + withdrawLimit + ";" + userId;
 	}
 		
 

@@ -4,9 +4,10 @@ package database_JDBC;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.util.LinkedList;
 
 import entities.Account;
+
 /*
  * Responsible to manipulate account table into the mysql
  * */
@@ -16,7 +17,9 @@ public class DAOAccount extends DAO{
 	public Account getAccountData(int id) throws SQLException {
 		this.sql = "SELECT * FROM account WHERE id = ?";
 		
-			ResultSet result = getResult(id);
+			ResultSet result = getFirstElement(id);
+		
+			
 			Account account = new Account(
 					result.getDouble("balance"),
 					result.getDouble("withdrawLimit"),
@@ -60,14 +63,43 @@ public class DAOAccount extends DAO{
 	
 	public void delete(int id) throws SQLException {
 		this.sql = "DELETE FROM account WHERE id= ?";
+		this.actionById(id);
+	}
+	
+	public LinkedList<Account> allAccounts() throws SQLException{
+		this.sql = "SELECT * FROM account";
+		
+		PreparedStatement ps;
 		try {
-			PreparedStatement ps = this.connection.prepareStatement(this.sql);
-			ps.setInt(1, id);
-			ps.execute();
-		}catch (Exception e) {
+			ps = this.connection.prepareStatement(this.sql);
+			ResultSet result = ps.executeQuery();
+			
+			LinkedList<Account> accounts = new LinkedList<>();
+			
+			while(result.next()) {
+				Account account = this.getAccountData(result.getInt("id"));
+				accounts.add(account);
+			}
+			return accounts;
+		} catch (SQLException e) {
 			this.connection.rollback();
 			e.printStackTrace();
+			return null;
 		}
+		// or
+		/*
+		 * ResultSet result = this.getFirstElement(1)
+		 * if (result != null){
+		 *     LinkedList<Account> accounts = new LinkedList<>();
+			
+				while(result.next()) {
+					Account account = this.getAccountData(result.getInt("id"));
+					accounts.add(account);
+				}
+				return accounts;
+			}
+		 * */
+		
 	}
 	
 }

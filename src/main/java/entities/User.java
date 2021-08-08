@@ -9,13 +9,20 @@ public final class User{
 	
 	private String fullName,CPF;
 	private LocalDate birthday;
-
+	private Integer userId;
 
 	//get all important informations from user
-	public User(String fullName, String CPF, LocalDate birthday){
+	public User(String fullName, String CPF, LocalDate birthday, Integer userId){
 		this.fullName = fullName;
 		this.CPF = CPF;
 		this.birthday = birthday;
+		this.userId = userId;
+	}
+	public Integer getUserId() {
+		return this.userId;
+	}
+	public void setUserId(Integer id) {
+		this.userId = id;
 	}
 	public User() {
 		this.fullName = "";

@@ -3,6 +3,7 @@ package database_JDBC;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class DAO {
 	
@@ -14,7 +15,7 @@ public class DAO {
 		this.connectionFactory = ConnectionFactory.getInstance();
 		this.connection = this.connectionFactory.getConnection();
 	}
-	public ResultSet getResult(int id) {
+	protected ResultSet getFirstElement(int id) {
 		try {
 			PreparedStatement ps = this.connection.prepareStatement(this.sql);
 			ps.setInt(1, id);
@@ -26,5 +27,28 @@ public class DAO {
 			e.printStackTrace();
 			return null;
 		}	
+	}
+	protected ResultSet getFirstElement(String CPF) {
+		try {
+			PreparedStatement ps = this.connection.prepareStatement(this.sql);
+			ps.setString(1, CPF);
+			ResultSet result= ps.executeQuery();
+			result.first();
+			return result;
+		}catch (Exception e) {
+
+			e.printStackTrace();
+			return null;
+		}	
+	}
+	protected void actionById(int id) throws SQLException {
+		try {
+			PreparedStatement ps = this.connection.prepareStatement(this.sql);
+			ps.setInt(1, id);
+			ps.execute();
+		}catch (Exception e) {
+			this.connection.rollback();
+			e.printStackTrace();
+		}
 	}
 }

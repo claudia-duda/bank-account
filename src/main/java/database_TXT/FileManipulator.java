@@ -1,4 +1,4 @@
-package operations;
+package database_TXT;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -41,10 +41,9 @@ public class FileManipulator {
 				String[] vect = line.split(";");
 				Double balance = Double.parseDouble(vect[1]);
 				Double withdrawLimit = Double.parseDouble(vect[2]);
-				String holder = vect[3];
-				String CPF = vect[4];
-				LocalDate birthday = this.dateStringToLocalDate(vect[5]);
-				acc = new Account(balance, withdrawLimit, holder, CPF, birthday);
+				Integer Userid = Integer.parseInt(vect[3]);
+				//LocalDate birthday = this.dateStringToLocalDate(vect[5]);
+				acc = new Account(balance, withdrawLimit, Userid);
 				accounts.add(acc);
 				
 				line = br.readLine();
