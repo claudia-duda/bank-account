@@ -1,11 +1,13 @@
 package aplication;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 import UI.View;
+import database_JDBC.*;
 
 import java.util.LinkedList; 
 
@@ -15,20 +17,23 @@ import entities.User;
 import exceptions.BusinessException;
 import exceptions.InvalidBillException;
 import operations.Deposit;
-import database_TXT.FileManipulator;
+
 import operations.Operation;
 import operations.Withdraw;
 /**
  *The Controller is responsible to "requests" changes to the account and file  
  */
-public class Controller {
+public class ControllerUsingMySQL {
 	
 	private View view = new View();
 	private Account account;
-	private FileManipulator accountsFile;
+	private User user;
 	private Byte accountOperationChoice = 1;
 	private Byte bankMenuOptionChoice = 1;
-
+	
+	private DAOUser userSQL;
+	private DAOAccount accountSQL;
+	
 	// Values of accountOperationChoice
 	public final byte BANK_MENU= 0;
 	public final byte DEPOSIT= 1;
@@ -41,8 +46,9 @@ public class Controller {
 	public final byte ACCESS_ACCOUNT= 3;
 	public final byte LIST_ACCOUNTS= 4;
 	
-	public Controller() {
-		accountsFile = new FileManipulator();
+	public  ControllerUsingMySQL() {
+		userSQL = new DAOUser();
+		accountSQL = new DAOAccount();
 		
 		start();
 	}
@@ -70,20 +76,23 @@ public class Controller {
 		}
 	}
 	//create an account with all attributes from the entity
-	public Account createAccount(){
+	public Account createAccount() throws SQLException{
 		Map<String, String> userInfo = new HashMap<String, String>(this.view.getUserinfo());
 		
-		this.account = accountsFile.validation(4, userInfo.get("CPF"));
-		if (this.account == null) {
+		this.user = userSQL.findUser(userInfo.get("CPF"));
+		
+		if (this.user == null) {
+			LocalDate birthday = this.dateStringToLocalDate(userInfo.get("birthday"));
+			this.user = new User(userInfo.get("CPF"),userInfo.get("holder"), birthday);
 			
 			Map<String, Double> userNumbers = new HashMap<String, Double>(this.view.getUserAmount());
-			
-			LocalDate birthday = this.dateStringToLocalDate(userInfo.get("birthday"));
-			User user = new User(userInfo.get("CPF"),userInfo.get("holder"), birthday);
-			
 			this.account = new Account(userNumbers.get("balance"),userNumbers.get("withdrawLimit"), user);
 		
-			accountsFile.createAccount(this.account);
+			this.userSQL.insert(this.user);
+			
+			this.accountSQL.insert(this.account);
+			this.view.print("Conta Criada com sucesso!/n");
+			
 						
 		}else {
 			this.view.print("Conta ja existe com o CPF informado");
@@ -94,7 +103,7 @@ public class Controller {
 		
 	}
 	//show all options to manipulate a specific account into the menu account
-	public void accountActions(){
+	public void accountActions() throws SQLException{
 		while (this.accountOperationChoice != 0) {
 			
 			this.view.bankMenu();
@@ -106,12 +115,13 @@ public class Controller {
 				Double result = op.action(account.getBalance(), amount);
 				this.account.setBalance(result);
 				this.view.print("Novo Saldo: "+ result.toString());
-				accountsFile.saveFile();
+				
+				this.accountSQL.edit(this.account);
 			}
 		}	
 	}
 	//Manager the number of accounts into the system or direct a specific account to be manipulated
-	public void bankControll() {
+	public void bankControll() throws SQLException {
 		this.view.accountMenu();
 		this.bankMenuOptionChoice= this.view.input.requestChoice();
 		String CPF;
@@ -123,12 +133,12 @@ public class Controller {
 		case REMOVE_ACCOUNT:
 			CPF = this.view.getUserCPF();
 			
-			this.account = accountsFile.validation(4, CPF);
+			this.user = userSQL.findUser(CPF);
 			
-			if (this.account != null) {
+			if (this.user != null) {
 				
-				this.accountsFile.removeAccount(this.account);
-				this.accountsFile.saveFile();
+				this.accountSQL.delete(this.user.getUserId());
+				this.userSQL.delete(this.user.getUserId());
 				this.view.print("Removida com sucesso");
 				bankControll();
 				
@@ -137,10 +147,12 @@ public class Controller {
 			}
 			break;
 		case ACCESS_ACCOUNT:
+			
 			CPF = this.view.getUserCPF();
-			this.account = accountsFile.validation(4, CPF);
-		
-			if (this.account != null) {
+			this.user = userSQL.findUser(CPF);
+			
+			if (this.user != null) {
+				this.account = this.accountSQL.getAccountData(ACCESS_ACCOUNT);
 				accountActions();
 			}else {
 				this.view.print("Conta não foi encontrada, crie uma nova: ");
@@ -153,8 +165,8 @@ public class Controller {
 		}
 	}
 	//show all accounts that have been saved until the moment
-	public	void allAccount() {
-		LinkedList<Account> accounts = accountsFile.getAccounts();
+	public	void allAccount() throws SQLException {
+		LinkedList<Account> accounts = this.accountSQL.allAccounts();
 		if(!accounts.isEmpty()) {
 			this.view.print("---------Contas cadastradas---------");
 			for(Account acc : accounts) {
@@ -168,7 +180,7 @@ public class Controller {
 		
 	}
 	//It Control what will be the operation to send for accounActions 
-	public Operation accountChoices() {	
+	public Operation accountChoices() throws SQLException {	
 		
 		Operation op = null;
 		

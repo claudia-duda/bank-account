@@ -15,6 +15,9 @@ import entities.User;
  * */
 public class DAOUser extends DAO{
 	
+	public DAOUser() {
+		super();
+	}
 	
 	public User getUserData(int id) throws SQLException {
 		
@@ -30,11 +33,13 @@ public class DAOUser extends DAO{
 		
 	}
 	//search for an user by your CPF and return the id from it
-	public Integer findUser(String CPF) throws SQLException {
+	public User findUser(String CPF) throws SQLException {
 		this.sql = "SELECT * FROM user WHERE CPF = ?";
-		ResultSet result = getFirstElement(CPF);
-		return result.getInt("id");
-		
+		if (getFirstElement(CPF) == null) {
+			return this.getUserData(getFirstElement(CPF).getInt("id"));
+		}else {
+			return null;
+		}
 	}
 	
 	private void prepareStatementToUser(String CPF, Date birthday, String fullName) throws SQLException {
@@ -76,36 +81,18 @@ public class DAOUser extends DAO{
 	public LinkedList<User> allUsers() throws SQLException{
 		this.sql = "SELECT * FROM user";
 		
-		PreparedStatement ps;
-		try {
-			ps = this.connection.prepareStatement(this.sql);
-			ResultSet result = ps.executeQuery();
-			
+		ResultSet result = this.getFirstElement(1);
+		if (result != null){
 			LinkedList<User> users = new LinkedList<>();
-			
+				
 			while(result.next()) {
 				User user = this.getUserData(result.getInt("id"));
 				users.add(user);
 			}
-			return users;
-		} catch (SQLException e) {
-			this.connection.rollback();
-			e.printStackTrace();
+				return users;
+		}else {
 			return null;
 		}
-		// or
-		/*
-		 * ResultSet result = this.getFirstElement(1)
-		 * if (result != null){
-		 *     LinkedList<Account> accounts = new LinkedList<>();
-			
-				while(result.next()) {
-					Account account = this.getAccountData(result.getInt("id"));
-					accounts.add(account);
-				}
-				return accounts;
-			}
-		 * */
 		
 	}
 	

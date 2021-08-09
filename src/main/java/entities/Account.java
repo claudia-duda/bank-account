@@ -9,21 +9,29 @@ public class Account implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	private Double balance, withdrawLimit;
-	private Integer userId;
+	private User user;
+	private Integer id;
 	
 	public Account() {
 	}
 	
 	//the main construct responsible to get all important information to an account
-	public Account(Double balance, Double withdrawLimit, Integer userId){
+	public Account(Integer id, Double balance, Double withdrawLimit, User user){
 	
 		this.balance = balance;
 		this.withdrawLimit = withdrawLimit;
-		this.userId = userId; 
+		this.user = user; 
+		this.id = id;
+	}
+	public Account(Double balance, Double withdrawLimit, User user){
+		
+		this.balance = balance;
+		this.withdrawLimit = withdrawLimit;
+		this.user = user; 
 	}
 	
 	public Double getBalance() {
-		return balance;
+		return this.balance;
 	}
 	
 	public void setBalance(Double balance) {
@@ -31,28 +39,38 @@ public class Account implements Serializable{
 	}
 
 	public Double getWithdrawLimit() {
-		return withdrawLimit;
+		return this.withdrawLimit;
 	}
 
 	public void setWithdrawLimit(Double withdrawLimit) {
 		this.withdrawLimit = withdrawLimit;
 	}
 	
-	public Integer getuserId() {
-		return this.userId;
+	public User getUser() {
+		return this.user;
 	}
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public Integer getUser_id() {
+		return this.user.getUserId();
+	}
+	public Integer getId() {
+		return id;
+	}
+	
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	
 	//return the important attributes
 	@Override
 	public String toString() {
-		return "Conta [saldo= " + balance + " limite conta= " + withdrawLimit +" Id usuário" + userId + "]";
+		return "Conta [id= " + id + "saldo= " + balance + " limite conta= " + withdrawLimit +" Nome completo= " + user.getFullName() + "]";
 	}
 	//the way how the text is saving the account data
 	public String formatStringTxt() {
-		return "Account = ;" + balance + ";" + withdrawLimit + ";" + userId;
+		return "Account = ;" + id +";" + balance + ";" + withdrawLimit + ";" + this.user.getFullName();
 	}
 		
 

@@ -1,11 +1,10 @@
 package database_TXT;
 
 import java.io.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 
 import entities.Account;
+import entities.User;
 
 /*
  *FileManipulator is responsible to manager all accounts informations into a txt
@@ -39,11 +38,14 @@ public class FileManipulator {
 			while (line != null) {
 				
 				String[] vect = line.split(";");
-				Double balance = Double.parseDouble(vect[1]);
-				Double withdrawLimit = Double.parseDouble(vect[2]);
-				Integer Userid = Integer.parseInt(vect[3]);
-				//LocalDate birthday = this.dateStringToLocalDate(vect[5]);
-				acc = new Account(balance, withdrawLimit, Userid);
+				Integer id = Integer.parseInt(vect[1]);
+				Double balance = Double.parseDouble(vect[2]);
+				Double withdrawLimit = Double.parseDouble(vect[3]);
+				String fullName = vect[4];
+				
+				User user = new User();
+				user.setFullName(fullName);
+				acc = new Account(id, balance, withdrawLimit, user);
 				accounts.add(acc);
 				
 				line = br.readLine();
@@ -57,12 +59,6 @@ public class FileManipulator {
 		}
 	}
 
-	public LocalDate dateStringToLocalDate(String date) {
-		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		
-		return LocalDate.parse(date, formatter);
-	}
 	
 	//Receive an account with all attributes and put it into the accounts list
 	public void createAccount(Account acc) {
@@ -119,5 +115,5 @@ public class FileManipulator {
 	}
 	
 }
-	
+
 	

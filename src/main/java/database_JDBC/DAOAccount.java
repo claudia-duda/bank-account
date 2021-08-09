@@ -7,27 +7,42 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 
 import entities.Account;
+import entities.User;
 
 /*
  * Responsible to manipulate account table into the mysql
  * */
 public class DAOAccount extends DAO{
 
+	public DAOAccount() {
+		super();
+	}
 
 	public Account getAccountData(int id) throws SQLException {
-		this.sql = "SELECT * FROM account WHERE id = ?";
+		this.sql = "SELECT account.id as id, balance, withdrawLimit,User_id,"
+				+ "fullName FROM account INNER JOIN user ON account.User_id = user.id WHERE account.id = ? ";
 		
-			ResultSet result = getFirstElement(id);
+		ResultSet result = getFirstElement(id);
 		
-			
-			Account account = new Account(
-					result.getDouble("balance"),
-					result.getDouble("withdrawLimit"),
-					result.getInt("User_id")
-			);
-			return account;
+		User user = new User();
+		user.setFullName(result.getString("fullName"));
+		
+		Account account = new Account(
+				result.getInt("id"),
+				result.getDouble("balance"),
+				result.getDouble("withdrawLimit"),
+				user
+		);
+		return account;
 		
 	}
+	public Account findAccount(Integer userId) throws SQLException {
+		this.sql = "SELECT * FROM user WHERE User_id = ?";
+		ResultSet result = getFirstElement(userId);
+		return this.getAccountData(result.getInt("id"));
+		
+	}
+	
 	private void prepareStatementToAccount(Double balance, Double withdrawLimit,Integer userId) throws SQLException {
 		try {
 			PreparedStatement ps = this.connection.prepareStatement(this.sql);
@@ -35,19 +50,19 @@ public class DAOAccount extends DAO{
 			ps.setDouble(2, withdrawLimit);
 			ps.setInt(3, userId);
 			ps.execute();
-		
+			
 		}catch (SQLException e) {
 			this.connection.rollback();
 			e.printStackTrace();
 		}
 	}	
 	public void insert(Account account) throws SQLException {
-		this.sql = "INSERT INTO account (balance, withdrawLimit, User_id) VALUES (?, ?, ?, ?)";
-
+		this.sql = "INSERT INTO account (balance,withdrawLimit,User_id) VALUES (? , ? , ?)";
+		
 		this.prepareStatementToAccount(
 				account.getBalance(), 
 				account.getWithdrawLimit(), 
-				account.getuserId()
+				account.getUser_id()
 		);
 	}
 
@@ -57,17 +72,18 @@ public class DAOAccount extends DAO{
 		this.prepareStatementToAccount(
 				account.getBalance(), 
 				account.getWithdrawLimit(), 
-				account.getuserId()
+				account.getUser_id()
 		);
 	}
 	
-	public void delete(int id) throws SQLException {
-		this.sql = "DELETE FROM account WHERE id= ?";
-		this.actionById(id);
+	public void delete(int userId) throws SQLException {
+		this.sql = "DELETE FROM account WHERE User_id= ?";
+		this.actionById(userId);
 	}
 	
 	public LinkedList<Account> allAccounts() throws SQLException{
-		this.sql = "SELECT * FROM account";
+		this.sql = "SELECT account.id as id, balance, withdrawLimit,User_id,"
+				+ "fullName FROM account INNER JOIN user ON account.User_id = user.id";
 		
 		PreparedStatement ps;
 		try {
@@ -78,9 +94,11 @@ public class DAOAccount extends DAO{
 			
 			while(result.next()) {
 				Account account = this.getAccountData(result.getInt("id"));
+		
 				accounts.add(account);
 			}
-			return accounts;
+				return accounts;
+			
 		} catch (SQLException e) {
 			this.connection.rollback();
 			e.printStackTrace();
@@ -88,16 +106,18 @@ public class DAOAccount extends DAO{
 		}
 		// or
 		/*
-		 * ResultSet result = this.getFirstElement(1)
-		 * if (result != null){
-		 *     LinkedList<Account> accounts = new LinkedList<>();
+		 ResultSet result = this.getFirstElement(0);
+		 if (result != null){
+		     LinkedList<Account> accounts = new LinkedList<>();
 			
 				while(result.next()) {
 					Account account = this.getAccountData(result.getInt("id"));
 					accounts.add(account);
 				}
 				return accounts;
-			}
+		 }else {
+			 return null;
+		 }
 		 * */
 		
 	}
