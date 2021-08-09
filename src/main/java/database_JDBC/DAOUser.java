@@ -20,26 +20,30 @@ public class DAOUser extends DAO{
 	}
 	
 	public User getUserData(int id) throws SQLException {
+		this.sql = "SELECT * FROM user WHERE id = ?";
+		ResultSet result = getFirstElement(id);
 		
-			ResultSet result = getFirstElement(id);
-			
-			User user = new User(
-					result.getString("CPF"),
-					result.getString("fullName"),
-					this.LocalDateConverter(result.getDate("birthday")),
-					result.getInt("id")
-					);		
-			return user;
+		User user = new User(
+				result.getString("CPF"),
+				result.getString("fullName"),
+				this.LocalDateConverter(result.getDate("birthday")),
+				result.getInt("id")
+				);		
+		return user;
 		
 	}
 	//search for an user by your CPF and return the id from it
-	public User findUser(String CPF) throws SQLException {
-		this.sql = "SELECT * FROM user WHERE CPF = ?";
-		if (getFirstElement(CPF) == null) {
-			return this.getUserData(getFirstElement(CPF).getInt("id"));
+	public Integer findUser(String CPF) throws SQLException {
+		this.sql = "SELECT id FROM user WHERE CPF = ?";
+		
+		ResultSet result = getFirstElement(CPF);
+		if(result.first()) {
+			Integer id =  result.getInt("id");
+			return id;
 		}else {
 			return null;
 		}
+		
 	}
 	
 	private void prepareStatementToUser(String CPF, Date birthday, String fullName) throws SQLException {
@@ -63,6 +67,7 @@ public class DAOUser extends DAO{
 				Date.valueOf(user.getBirthday()),
 				user.getFullName()
 		);
+		
 		
 	}
 	

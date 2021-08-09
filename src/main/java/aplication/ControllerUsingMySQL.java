@@ -79,20 +79,27 @@ public class ControllerUsingMySQL {
 	public Account createAccount() throws SQLException{
 		Map<String, String> userInfo = new HashMap<String, String>(this.view.getUserinfo());
 		
-		this.user = userSQL.findUser(userInfo.get("CPF"));
+		Integer id = this.userSQL.findUser(userInfo.get("CPF"));
 		
-		if (this.user == null) {
+		if (id == null) {
 			LocalDate birthday = this.dateStringToLocalDate(userInfo.get("birthday"));
-			this.user = new User(userInfo.get("CPF"),userInfo.get("holder"), birthday);
+			this.user = new User(userInfo.get("holder"),userInfo.get("CPF"), birthday);
 			
-			Map<String, Double> userNumbers = new HashMap<String, Double>(this.view.getUserAmount());
-			this.account = new Account(userNumbers.get("balance"),userNumbers.get("withdrawLimit"), user);
-		
+			this.view.print(this.user.toString());
+			//user and account needing a id 
+			
 			this.userSQL.insert(this.user);
 			
-			this.accountSQL.insert(this.account);
-			this.view.print("Conta Criada com sucesso!/n");
+			this.view.print(this.user.toString());
 			
+			this.user.setUserId(this.userSQL.findUser(userInfo.get("CPF")));
+			this.view.print(this.user.toString());
+			
+			
+			Map<String, Double> userNumbers = new HashMap<String, Double>(this.view.getUserAmount());
+			
+			this.account = new Account(userNumbers.get("balance"),userNumbers.get("withdrawLimit"), user);
+			this.accountSQL.insert(this.account);
 						
 		}else {
 			this.view.print("Conta ja existe com o CPF informado");
@@ -133,9 +140,9 @@ public class ControllerUsingMySQL {
 		case REMOVE_ACCOUNT:
 			CPF = this.view.getUserCPF();
 			
-			this.user = userSQL.findUser(CPF);
+			Integer id = userSQL.findUser(CPF);
 			
-			if (this.user != null) {
+			if (id != null) {
 				
 				this.accountSQL.delete(this.user.getUserId());
 				this.userSQL.delete(this.user.getUserId());
@@ -149,7 +156,7 @@ public class ControllerUsingMySQL {
 		case ACCESS_ACCOUNT:
 			
 			CPF = this.view.getUserCPF();
-			this.user = userSQL.findUser(CPF);
+			this.user = this.userSQL.getUserData(this.userSQL.findUser(this.user.getCPF()));
 			
 			if (this.user != null) {
 				this.account = this.accountSQL.getAccountData(ACCESS_ACCOUNT);

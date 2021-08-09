@@ -61,7 +61,7 @@ public class View {
 	}
 	//show all account options to choice 
 	public void bankMenu() {
-		print("---------Conta Banc�ria------------");
+		print("---------Conta Bancária------------");
 		print("1- Depositar");
 		print("2- Sacar");
 		print("3- Dados pessoais");

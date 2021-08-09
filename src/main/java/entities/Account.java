@@ -66,11 +66,11 @@ public class Account implements Serializable{
 	//return the important attributes
 	@Override
 	public String toString() {
-		return "Conta [id= " + id + "saldo= " + balance + " limite conta= " + withdrawLimit +" Nome completo= " + user.getFullName() + "]";
+		return "Conta [id= " + id + " saldo= " + balance + " limite conta= " + withdrawLimit +" Nome completo= " + user.getFullName() + "]";
 	}
 	//the way how the text is saving the account data
 	public String formatStringTxt() {
-		return "Account = ;" + id +";" + balance + ";" + withdrawLimit + ";" + this.user.getFullName();
+		return "Account = ;" + id +";" + balance + ";" + withdrawLimit + ";" + this.getUser_id();
 	}
 		
 

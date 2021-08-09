@@ -36,19 +36,23 @@ public class DAOAccount extends DAO{
 		return account;
 		
 	}
-	public Account findAccount(Integer userId) throws SQLException {
+	public Integer findId(Integer userId) throws SQLException {
 		this.sql = "SELECT * FROM user WHERE User_id = ?";
 		ResultSet result = getFirstElement(userId);
-		return this.getAccountData(result.getInt("id"));
-		
+		Account account = this.getAccountData(result.getInt("id"));
+		return account.getId();
 	}
 	
-	private void prepareStatementToAccount(Double balance, Double withdrawLimit,Integer userId) throws SQLException {
+	private void prepareStatementToAccount(Double balance, Double withdrawLimit,Integer userId, Boolean update ) throws SQLException {
 		try {
 			PreparedStatement ps = this.connection.prepareStatement(this.sql);
 			ps.setDouble(1,balance);
 			ps.setDouble(2, withdrawLimit);
 			ps.setInt(3, userId);
+			
+			if (update == true) {
+				ps.setInt(4, userId);
+			}
 			ps.execute();
 			
 		}catch (SQLException e) {
@@ -57,22 +61,24 @@ public class DAOAccount extends DAO{
 		}
 	}	
 	public void insert(Account account) throws SQLException {
-		this.sql = "INSERT INTO account (balance,withdrawLimit,User_id) VALUES (? , ? , ?)";
+		this.sql = "INSERT INTO account (balance, withdrawLimit, User_id) VALUES (? , ? , ?)";
 		
 		this.prepareStatementToAccount(
 				account.getBalance(), 
 				account.getWithdrawLimit(), 
-				account.getUser_id()
+				account.getUser_id(),
+				false
 		);
 	}
 
 	public void edit(Account account) throws SQLException {
-		this.sql = "UPDATE account SET balance = ?, withdrawLimit = ?, User_id = ?";
+		this.sql = "UPDATE account SET balance = ?, withdrawLimit = ?, User_id = ? WHERE User_id = ?";
 		
 		this.prepareStatementToAccount(
 				account.getBalance(), 
 				account.getWithdrawLimit(), 
-				account.getUser_id()
+				account.getUser_id(),
+				true
 		);
 	}
 	

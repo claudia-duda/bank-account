@@ -74,7 +74,10 @@ public final class User{
 	//return the important attributes
 	@Override
 	public String toString() {
-		return " Titular = " + fullName + " CPF = " + CPF + " Data de Nascimento= " + this.dateToString(birthday); 
+		return " Titular = " + fullName + 
+				" CPF = " + CPF + " Data de Nascimento= " + 
+				this.dateToString(birthday) + 
+				" ID= "+ id; 
 	}
 	//the way how the text is saving the user data
 	public String formatStringTxt() {
