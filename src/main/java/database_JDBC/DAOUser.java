@@ -62,7 +62,6 @@ public class DAOUser extends DAO{
 		}
 		return id;
 	}
-	
 	// responsible to prepare state changing their values
 	private void prepareStatementToUser(String CPF, Date birthday, String fullName) throws SQLException {
 		try {
@@ -85,9 +84,7 @@ public class DAOUser extends DAO{
 				user.getCPF(), 
 				Date.valueOf(user.getBirthday()),
 				user.getFullName()
-		);
-		
-		
+		);		
 	}
 	//edit the user into the database
 	public void edit(User user) throws SQLException {
