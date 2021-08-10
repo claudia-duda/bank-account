@@ -126,7 +126,6 @@ public class DAOUser extends DAO{
 		
 	}
 	
-	
 	public LocalDate LocalDateConverter(Date date) {
 		
 		return date.toLocalDate();
