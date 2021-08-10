@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 import java.sql.Date;
 
+import entities.Account;
 import entities.User;
 
 /*
@@ -35,6 +36,22 @@ public class DAOUser extends DAO{
 		}
 		return null;
 	}
+	//get the first element using CPF 
+	private ResultSet getFirstElement(String CPF) {
+		try {
+			PreparedStatement ps = this.connection.prepareStatement(this.sql);
+			ps.setString(1, CPF);
+			ResultSet result= ps.executeQuery();
+			if(result.first() != false ) {
+				return result;
+			}
+			return null;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}	
+	}
+		
 	//search for an user by your CPF and return the id from it
 	public Integer findUser(String CPF) throws SQLException {
 		this.sql = "SELECT id FROM user WHERE CPF = ?";
@@ -46,6 +63,7 @@ public class DAOUser extends DAO{
 		}
 		return id;
 	}
+	
 	// responsible to prepare state changing their values
 	private void prepareStatementToUser(String CPF, Date birthday, String fullName) throws SQLException {
 		try {
@@ -72,7 +90,7 @@ public class DAOUser extends DAO{
 		
 		
 	}
-	
+	//edit the user into the database
 	public void edit(User user) throws SQLException {
 		this.sql = "UPDATE user SET CPF = ?, birthday = ?, fullName = ?";
 		this.prepareStatementToUser(
@@ -81,23 +99,32 @@ public class DAOUser extends DAO{
 				user.getFullName()
 		);
 	}
+	//delete the user using your id to find
 	public void delete(int id) throws SQLException {
 		this.sql = "DELETE FROM user WHERE id= ?";
 		this.actionById(id);
 	}
+	//search and get all users putting into a list 
 	public LinkedList<User> allUsers() throws SQLException{
 		this.sql = "SELECT * FROM user";
 		
-		ResultSet result = this.getFirstElement(1);
-		if (result != null){
+		PreparedStatement ps;
+		try {
+			ps = this.connection.prepareStatement(this.sql);
+			ResultSet result = ps.executeQuery();
+			
 			LinkedList<User> users = new LinkedList<>();
-				
+			
 			while(result.next()) {
 				User user = this.getUserData(result.getInt("id"));
+		
 				users.add(user);
 			}
 				return users;
-		}else {
+			
+		} catch (SQLException e) {
+			this.connection.rollback();
+			e.printStackTrace();
 			return null;
 		}
 		

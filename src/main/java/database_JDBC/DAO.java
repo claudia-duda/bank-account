@@ -15,6 +15,7 @@ public abstract class DAO {
 		this.connectionFactory = ConnectionFactory.getInstance();
 		this.connection = this.connectionFactory.getConnection();
 	}
+	//used on child classes to get the first element using the id(been account or user)
 	protected ResultSet getFirstElement(int id) {
 		try {
 			PreparedStatement ps = this.connection.prepareStatement(this.sql);
@@ -31,21 +32,8 @@ public abstract class DAO {
 			return null;
 		}	
 	}
-	protected ResultSet getFirstElement(String CPF) {
-		try {
-			PreparedStatement ps = this.connection.prepareStatement(this.sql);
-			ps.setString(1, CPF);
-			ResultSet result= ps.executeQuery();
-			if(result.first() != false ) {
-				return result;
-			}
-			return null;
-		}catch (Exception e) {
-			System.out.print("problems into "+ e.getMessage());
-			e.printStackTrace();
-			return null;
-		}	
-	}
+	
+	//execute s sql action based on their id 
 	protected void actionById(int id) throws SQLException {
 		try {
 			PreparedStatement ps = this.connection.prepareStatement(this.sql);
