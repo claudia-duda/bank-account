@@ -26,6 +26,7 @@ public class DAOAccount extends DAO{
 		
 		User user = new User();
 		user.setFullName(result.getString("fullName"));
+		user.setUserId(result.getInt("User_id"));
 		
 		Account account = new Account(
 				result.getInt("id"),
@@ -37,13 +38,14 @@ public class DAOAccount extends DAO{
 		
 	}
 	public Integer findId(Integer userId) throws SQLException {
-		this.sql = "SELECT * FROM user WHERE User_id = ?";
+		this.sql = "SELECT * FROM account WHERE User_id = ?";
 		ResultSet result = getFirstElement(userId);
 		Account account = this.getAccountData(result.getInt("id"));
 		return account.getId();
 	}
 	
 	private void prepareStatementToAccount(Double balance, Double withdrawLimit,Integer userId, Boolean update ) throws SQLException {
+		
 		try {
 			PreparedStatement ps = this.connection.prepareStatement(this.sql);
 			ps.setDouble(1,balance);
@@ -52,6 +54,7 @@ public class DAOAccount extends DAO{
 			
 			if (update == true) {
 				ps.setInt(4, userId);
+				
 			}
 			ps.execute();
 			
@@ -113,7 +116,7 @@ public class DAOAccount extends DAO{
 		// or
 		/*
 		 ResultSet result = this.getFirstElement(0);
-		 if (result != null){
+		 if (result.first){
 		     LinkedList<Account> accounts = new LinkedList<>();
 			
 				while(result.next()) {

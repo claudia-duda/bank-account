@@ -20,8 +20,11 @@ public abstract class DAO {
 			PreparedStatement ps = this.connection.prepareStatement(this.sql);
 			ps.setInt(1, id);
 			ResultSet result= ps.executeQuery();
-			result.first();
-			return result;
+			if(result.first()) {
+				return result;
+			}
+			return null;
+			
 		}catch (Exception e) {
 
 			e.printStackTrace();
@@ -33,10 +36,12 @@ public abstract class DAO {
 			PreparedStatement ps = this.connection.prepareStatement(this.sql);
 			ps.setString(1, CPF);
 			ResultSet result= ps.executeQuery();
-			result.first();
-			return result;
+			if(result.first() != false ) {
+				return result;
+			}
+			return null;
 		}catch (Exception e) {
-
+			System.out.print("problems into "+ e.getMessage());
 			e.printStackTrace();
 			return null;
 		}	

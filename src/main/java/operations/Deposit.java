@@ -11,8 +11,8 @@ public class Deposit extends  Operation{
 	
 	//an optional method responsible for depositing paper money into an account in person
 	private double presentialDeposit() throws InvalidBillException {
-		if(this.amount % 2 == 0) {
-			System.out.print(this.amount);
+		if(this.amount % 2 == 0 || this.amount % 2 == 1) {
+			
 			return amount;			
 		}
 		else {

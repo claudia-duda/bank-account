@@ -84,19 +84,11 @@ public class ControllerUsingMySQL {
 		if (id == null) {
 			LocalDate birthday = this.dateStringToLocalDate(userInfo.get("birthday"));
 			this.user = new User(userInfo.get("holder"),userInfo.get("CPF"), birthday);
-			
-			this.view.print(this.user.toString());
-			//user and account needing a id 
-			
-			this.userSQL.insert(this.user);
-			
-			this.view.print(this.user.toString());
-			
-			this.user.setUserId(this.userSQL.findUser(userInfo.get("CPF")));
-			this.view.print(this.user.toString());
-			
-			
+	
 			Map<String, Double> userNumbers = new HashMap<String, Double>(this.view.getUserAmount());
+			
+			this.userSQL.insert(this.user);			
+			this.user.setUserId(this.userSQL.findUser(userInfo.get("CPF")));
 			
 			this.account = new Account(userNumbers.get("balance"),userNumbers.get("withdrawLimit"), user);
 			this.accountSQL.insert(this.account);
@@ -114,12 +106,13 @@ public class ControllerUsingMySQL {
 		while (this.accountOperationChoice != 0) {
 			
 			this.view.bankMenu();
-			this.accountOperationChoice= this.view.input.requestChoice();
+			this.accountOperationChoice = this.view.input.requestChoice();
 			Operation op = accountChoices();
 			if (op != null) {
 				
 				double amount = this.view.getUserMoneyValue();
 				Double result = op.action(account.getBalance(), amount);
+				
 				this.account.setBalance(result);
 				this.view.print("Novo Saldo: "+ result.toString());
 				
@@ -129,9 +122,11 @@ public class ControllerUsingMySQL {
 	}
 	//Manager the number of accounts into the system or direct a specific account to be manipulated
 	public void bankControll() throws SQLException {
+		String CPF;
+		Integer id;
+		
 		this.view.accountMenu();
 		this.bankMenuOptionChoice= this.view.input.requestChoice();
-		String CPF;
 		switch(this.bankMenuOptionChoice) {
 		case CREATE_ACCOUNT:
 			this.account = createAccount();
@@ -140,12 +135,13 @@ public class ControllerUsingMySQL {
 		case REMOVE_ACCOUNT:
 			CPF = this.view.getUserCPF();
 			
-			Integer id = userSQL.findUser(CPF);
+			id = userSQL.findUser(CPF);
 			
 			if (id != null) {
 				
-				this.accountSQL.delete(this.user.getUserId());
-				this.userSQL.delete(this.user.getUserId());
+				this.accountSQL.delete(id);
+				this.view.print("account foi");
+				this.userSQL.delete(id);
 				this.view.print("Removida com sucesso");
 				bankControll();
 				
@@ -156,11 +152,14 @@ public class ControllerUsingMySQL {
 		case ACCESS_ACCOUNT:
 			
 			CPF = this.view.getUserCPF();
-			this.user = this.userSQL.getUserData(this.userSQL.findUser(this.user.getCPF()));
+			id = userSQL.findUser(CPF);
 			
-			if (this.user != null) {
-				this.account = this.accountSQL.getAccountData(ACCESS_ACCOUNT);
+			if (id != null) {
+				this.account = this.accountSQL.getAccountData(this.accountSQL.findId(id));
+				this.user = this.userSQL.getUserData(id);
+		
 				accountActions();
+				
 			}else {
 				this.view.print("Conta não foi encontrada, crie uma nova: ");
 				this.account = createAccount();
@@ -203,7 +202,7 @@ public class ControllerUsingMySQL {
 				op = new Withdraw(account.getBalance(),account.getWithdrawLimit());
 				break;
 			case SHOW_USER_DATA:
-				String data= account.getUser().toString();
+				String data= this.user.toString();
 				this.view.print(data);
 				this.view.print(" Saldo Atual: " + account.getBalance().toString());
 				this.view.print(" Limite Atual: " + account.getWithdrawLimit().toString());

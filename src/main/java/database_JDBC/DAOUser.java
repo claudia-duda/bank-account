@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.LinkedList;
 import java.sql.Date;
 
@@ -18,34 +17,36 @@ public class DAOUser extends DAO{
 	public DAOUser() {
 		super();
 	}
-	
+	//get user using your id
 	public User getUserData(int id) throws SQLException {
 		this.sql = "SELECT * FROM user WHERE id = ?";
 		ResultSet result = getFirstElement(id);
 		
-		User user = new User(
-				result.getString("CPF"),
-				result.getString("fullName"),
-				this.LocalDateConverter(result.getDate("birthday")),
-				result.getInt("id")
-				);		
-		return user;
-		
+		if (result != null){
+			LocalDate birthday = this.LocalDateConverter(result.getDate("birthday"));
+			
+			User user = new User(
+					result.getString("CPF"),
+					result.getString("fullName"),
+					birthday,
+					result.getInt("id")
+					);		
+			return user;			
+		}
+		return null;
 	}
 	//search for an user by your CPF and return the id from it
 	public Integer findUser(String CPF) throws SQLException {
 		this.sql = "SELECT id FROM user WHERE CPF = ?";
-		
+		Integer id = null;
 		ResultSet result = getFirstElement(CPF);
-		if(result.first()) {
-			Integer id =  result.getInt("id");
-			return id;
-		}else {
-			return null;
-		}
 		
+		if(result != null) {
+			id =  result.getInt("id");
+		}
+		return id;
 	}
-	
+	// responsible to prepare state changing their values
 	private void prepareStatementToUser(String CPF, Date birthday, String fullName) throws SQLException {
 		try {
 			PreparedStatement ps = this.connection.prepareStatement(this.sql);
@@ -59,6 +60,7 @@ public class DAOUser extends DAO{
 			e.printStackTrace();
 		}
 	}
+	//insert an element into database
 	public void insert(User user) throws SQLException {
 		this.sql = "INSERT INTO user (CPF,birthday,fullName) VALUES (? , ? , ?)";
 		
@@ -103,7 +105,8 @@ public class DAOUser extends DAO{
 	
 	
 	public LocalDate LocalDateConverter(Date date) {
-		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		return date.toLocalDate();
 	}
 	
 }
