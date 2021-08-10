@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 import java.sql.Date;
 
-import entities.Account;
 import entities.User;
 
 /*
