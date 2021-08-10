@@ -85,9 +85,7 @@ public class DAOUser extends DAO{
 				user.getCPF(), 
 				Date.valueOf(user.getBirthday()),
 				user.getFullName()
-		);
-		
-		
+		);		
 	}
 	//edit the user into the database
 	public void edit(User user) throws SQLException {
