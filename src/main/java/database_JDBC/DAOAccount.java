@@ -26,7 +26,7 @@ public class DAOAccount extends DAO{
 		
 		User user = new User();
 		user.setFullName(result.getString("fullName"));
-		user.setUserId(result.getInt("User_id"));
+		user.setId(result.getInt("User_id"));
 		
 		Account account = new Account(
 				result.getInt("id"),
@@ -52,7 +52,7 @@ public class DAOAccount extends DAO{
 			ps.setDouble(1,balance);
 			ps.setDouble(2, withdrawLimit);
 			ps.setInt(3, userId);
-			
+
 			if (update == true) {
 				ps.setInt(4, userId);
 				
@@ -71,7 +71,7 @@ public class DAOAccount extends DAO{
 		this.prepareStatementToAccount(
 				account.getBalance(), 
 				account.getWithdrawLimit(), 
-				account.getUser_id(),
+				account.getId(),
 				false
 		);
 	}
@@ -82,7 +82,7 @@ public class DAOAccount extends DAO{
 		this.prepareStatementToAccount(
 				account.getBalance(), 
 				account.getWithdrawLimit(), 
-				account.getUser_id(),
+				account.getId(),
 				true
 		);
 	}

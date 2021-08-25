@@ -43,7 +43,7 @@ public class ConnectionFactory {
 			this.connection = DriverManager.getConnection(DATABASE_URL,USERNAME,PASSWORD);
 			
 		}catch (Exception e) {
-			// TODO: handle exception
+			
 			System.out.println("Erro ao conectar: "+ e.getMessage());
 			
 		}
