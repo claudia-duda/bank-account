@@ -1,4 +1,4 @@
-package database_TXT;
+package database.TXT;
 
 import java.io.*;
 import java.util.LinkedList;

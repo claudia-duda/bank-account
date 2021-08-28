@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import UI.View;
-import database_JDBC.*;
+import database.JDBC.*;
 
 import java.util.LinkedList; 
 
