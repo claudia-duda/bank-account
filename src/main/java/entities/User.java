@@ -2,21 +2,42 @@ package entities;
 
 import java.time.LocalDate;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 /*
  *The UserData has all methods and attributes from a specific user
  */
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "user")
+@Entity
 public final class User{
 	
-	private String fullName,CPF;
-	private LocalDate birthday;
+	@EqualsAndHashCode.Include
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
+	private String fullName;
+	@Column(nullable = false, unique = true)
+	private String CPF;
+	private LocalDate birthday;
 
-	//get all important informations from user
 	public User(String fullName, String CPF, LocalDate birthday, Integer id){
 		this.fullName = fullName;
 		this.CPF = CPF;
 		this.birthday = birthday;
 		this.id = id;
+		
 	}
 	public User(String fullName, String CPF, LocalDate birthday){
 		this.fullName = fullName;
@@ -24,40 +45,11 @@ public final class User{
 		this.birthday = birthday;
 	
 	}
-	
-	public Integer getUserId() {
-		return this.id;
-	}
-	public void setUserId(Integer id) {
-		this.id = id;
-	}
 	public User() {
 		this.fullName = "";
 		this.CPF = "";
 		this.birthday = null;
 		
-	}
-	public String getFullName() {
-		return this.fullName;
-	}
-	public String getCPF(){
-		return this.CPF;
-	}
-	
-	public LocalDate getBirthday() {
-		return this.birthday;
-	}
-	
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
-	
-	public void setCPF(String CPF) {
-		this.CPF = CPF;
-	}
-	
-	public void setBirthday(LocalDate birthday) {
-		this.birthday = birthday;
 	}
 	
 	private String dateToString(LocalDate date) {

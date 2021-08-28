@@ -15,7 +15,7 @@ import entities.User;
 import exceptions.BusinessException;
 import exceptions.InvalidBillException;
 import operations.Deposit;
-import database_TXT.FileManipulator;
+import database.TXT.FileManipulator;
 import operations.Operation;
 import operations.Withdraw;
 /**

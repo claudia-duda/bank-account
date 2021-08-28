@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import UI.View;
-import database_JDBC.*;
+import database.JDBC.*;
 
 import java.util.LinkedList; 
 
@@ -88,7 +88,7 @@ public class ControllerUsingMySQL {
 			Map<String, Double> userNumbers = new HashMap<String, Double>(this.view.getUserAmount());
 			
 			this.userSQL.insert(this.user);			
-			this.user.setUserId(this.userSQL.findUser(userInfo.get("CPF")));
+			this.user.setId(this.userSQL.findUser(userInfo.get("CPF")));
 			
 			this.account = new Account(userNumbers.get("balance"),userNumbers.get("withdrawLimit"), user);
 			this.accountSQL.insert(this.account);
